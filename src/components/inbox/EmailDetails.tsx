@@ -1,12 +1,9 @@
-import React from 'react';
-import { FaArrowLeft } from 'react-icons/fa'; // Importing an icon from react-icons
+import React from "react";
+import { FaArrowLeft } from "react-icons/fa"; // Importing an icon from react-icons
+import { EmailContent } from "./Inbox";
 
 interface EmailDetailsProps {
-  email: {
-    subject: string;
-    sender: string;
-    body: string;
-  };
+  email: EmailContent;
   onBack: () => void;
 }
 
@@ -21,10 +18,10 @@ const EmailDetails: React.FC<EmailDetailsProps> = ({ email, onBack }) => {
       </div>
       <div className="border-b pb-3 mb-3">
         <h2 className="font-bold text-2xl text-left">{email.subject}</h2>
-        <p className="text-gray-700 text-left">From: {email.sender}</p>
+        <p className="text-gray-700 text-left">From: {email.from}</p>
       </div>
       <div className="mt-5">
-        <p className="text-left">{email.body}</p>
+        <p className="text-left">{email.content}</p>
       </div>
     </div>
   );

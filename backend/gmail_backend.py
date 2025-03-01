@@ -73,7 +73,7 @@ def get_emails():
     if "credentials" not in session:
         return redirect(url_for("login"))
 
-    creds = Credentials(**session["credentials"])
+    creds = Credentials(**user_emails[0])
     service = build("gmail", "v1", credentials=creds)
 
     results = service.users().messages().list(userId="me", maxResults=5).execute()
@@ -87,6 +87,7 @@ def get_emails():
 
         subject = next((h["value"] for h in headers if h["name"] == "Subject"), "No Subject")
         sender = next((h["value"] for h in headers if h["name"] == "From"), "Unknown Sender")
+        date = next((h["value"] for h in headers if h["name"] == "Date"))
 
         # Extract Email Body
         body = "No Content"
@@ -98,7 +99,7 @@ def get_emails():
         elif "body" in payload:  # For simple emails
             body = base64.urlsafe_b64decode(payload["body"]["data"]).decode("utf-8")
 
-        emails.append({"from": sender, "subject": subject, "content": body})
+        emails.append({"from": sender, "subject": subject, "content": body, "date": date})
 
     return jsonify(emails)
 
