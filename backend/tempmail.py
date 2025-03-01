@@ -3,8 +3,10 @@ import string
 import hashlib
 import requests
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # Replace with your actual RapidAPI key and host
 RAPIDAPI_KEY = "c25297cda3msh7e05d4cd25fccc5p154f03jsn42691cbc4a3a"

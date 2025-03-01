@@ -33,10 +33,10 @@ const SidebarGeneral = ({
           onClick={() => {}}
         />
         <SidebarGeneralItem
-          selected={false}
+          selected={currentRoute === AppRoutes.TempMail}
           icon={<AiTwotoneMail size={24} />}
           label="Temporary Mail"
-          onClick={() => {}}
+          onClick={() => setCurrentRoute(AppRoutes.TempMail)}
         />
         <SidebarGeneralItem
           selected={false}
