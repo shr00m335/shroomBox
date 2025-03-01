@@ -1,28 +1,30 @@
-import { useAtom } from "jotai";
 import { AiTwotoneMail } from "react-icons/ai";
 import { FaMailBulk } from "react-icons/fa";
 import { MdLowPriority, MdMail, MdMoreHoriz } from "react-icons/md";
-import { AppRoutes, currentRouteAtom } from "../../../stores/AppStores";
 import SidebarGeneralItem from "./GeneralItem";
 
-const SidebarGeneral = (): React.ReactNode => {
-  const [currentRoute, setCurrentRoute] = useAtom(currentRouteAtom);
+interface SidebarGeneralProps {
+  selectedItem: string;
+}
 
+const SidebarGeneral = ({
+  selectedItem,
+}: SidebarGeneralProps): React.ReactNode => {
   return (
     <div className="flex flex-col items-start my-3">
       <p className="font-bold text-xl">General</p>
       <div className="py-1 w-full">
         <SidebarGeneralItem
-          selected={currentRoute === AppRoutes.Inbox}
+          selected={selectedItem === "inbox"}
           icon={<MdMail size={24} />}
           label="Inbox"
-          onClick={() => setCurrentRoute(AppRoutes.Inbox)}
+          onClick={() => (window.location.href = "/inbox")}
         />
         <SidebarGeneralItem
-          selected={currentRoute === AppRoutes.EmailManager}
+          selected={selectedItem === "manager"}
           icon={<FaMailBulk size={24} />}
           label="Email Manager"
-          onClick={() => setCurrentRoute(AppRoutes.EmailManager)}
+          onClick={() => (window.location.href = "/manager")}
         />
         <SidebarGeneralItem
           selected={false}
