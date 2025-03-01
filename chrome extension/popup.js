@@ -71,25 +71,52 @@ function fillFormFields(email) {
       passwordField = document.querySelector("input[placeholder*='Password']");
     }
     if (passwordField) {
-      passwordField.value = "mySuperSecretPassword";
+      passwordField.value = "'2j!)e75Z1R,";
     }
     
-    // Find and fill date-of-birth field with a hard-coded date
-    // First, try standard date input
-    let dobField = document.querySelector("input[type='date']");
-    // Alternatively, look for a field with a placeholder containing "Birth"
-    if (!dobField) {
-      dobField = document.querySelector("input[placeholder*='Birth']");
+    // Find and fill date-of-birth fields
+    let dobDayField = document.querySelector("input[name='dateOfBirth-D']");
+    let dobMonthField = document.querySelector("input[name='dateOfBirth-M']");
+    let dobYearField = document.querySelector("input[name='dateOfBirth-Y']");
+    
+    if (dobDayField && dobMonthField && dobYearField) {
+      dobDayField.value = "01";
+      dobMonthField.value = "01";
+      dobYearField.value = "1990";
+    } else {
+      // Alternatively, look for a single date field
+      let dobField = document.querySelector("input[type='date']");
+      if (!dobField) {
+        dobField = document.querySelector("input[placeholder*='Birth']");
+      }
+      if (dobField) {
+        // The format may vary: for type="date", use YYYY-MM-DD
+        dobField.value = "1990-01-01";
+      }
     }
-    if (dobField) {
-      // The format may vary: for type="date", use YYYY-MM-DD
-      dobField.value = "1990-01-01";
+
+    // Find and fill first name field
+    let firstNameField = document.querySelector("input[name='first-name']");
+    if (!firstNameField) {
+      firstNameField = document.querySelector("input[placeholder*='First name']");
+    }
+    if (firstNameField) {
+      firstNameField.value = "Josh";
+    }
+
+    // Find and fill last name field
+    let lastNameField = document.querySelector("input[name='last-name']");
+    if (!lastNameField) {
+      lastNameField = document.querySelector("input[placeholder*='Last name']");
+    }
+    if (lastNameField) {
+      lastNameField.value = "Ian";
     }
     
     attempts++;
     // Clear the interval if at least the email field is found,
     // or after max attempts.
-    if ((emailField || passwordField || dobField) || attempts >= maxAttempts) {
+    if ((emailField || passwordField || dobDayField || dobMonthField || dobYearField || firstNameField || lastNameField) || attempts >= maxAttempts) {
       clearInterval(intervalId);
       if (!emailField) {
         alert("Email field not found on this page.");
