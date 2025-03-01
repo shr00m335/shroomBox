@@ -1,39 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { getOpenAIResponse } from "../../../api";
 import { BlueButton } from "../Buttons";
 import Sidebar from "../sidebar/Sidebar";
 import InboxItem from "./inboxItem";
-import { getOpenAIResponse } from '../../../api';
 
 const Inbox: React.FC = () => {
-  const [query, setQuery] = useState('');
-  const [response, setResponse] = useState('');
+  const [query, setQuery] = useState("");
+  const [response, setResponse] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
 
   const handleAIRequest = async () => {
-    console.log('Submitting query:', query); // Debug log
+    console.log("Submitting query:", query); // Debug log
     try {
       const aiResponse = await getOpenAIResponse(query);
-      console.log('AI response:', aiResponse); // Debug log
+      console.log("AI response:", aiResponse); // Debug log
       // Updated here: using message.content instead of text
       setResponse(aiResponse.choices[0].message.content);
     } catch (error) {
-      console.error('Error fetching AI response:', error);
+      console.error("Error fetching AI response:", error);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleAIRequest();
     }
   };
 
   return (
-    <
     <div className="flex bg-[#F5F6FA] w-screen h-screen">
-      <Sidebar selectedItem="manager" />
+      <Sidebar selectedItem="inbox" />
       <div className="w-full h-full p-5">
         <p className="font-bold text-3xl w-full text-left">Inbox</p>
         <div className="w-full h-9/10 bg-white my-5 rounded-2xl flex flex-col items-start p-5">
