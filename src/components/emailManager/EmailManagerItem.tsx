@@ -1,21 +1,26 @@
 import React from "react";
 
 interface GameManagerItemProps {
-  title: string;
-  summary: string;
-  usage: string;
+  imgsrc: string;
+  name: string;
+  email: string;
 }
 
 const GameManagerItem: React.FC<GameManagerItemProps> = ({
-  title,
-  summary,
-  usage,
+  imgsrc,
+  name,
+  email,
 }) => {
   return (
-    <div className="border border-gray-200 rounded-lg p-4 w-64 m-2 shadow-sm h-[200px]">
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-sm text-gray-600 italic mb-1">{summary}</p>
-      <p className="text-sm text-gray-700">{usage}</p>
+    <div className="border border-gray-200 rounded-lg p-4 w-64 m-2 shadow-sm h-[240px] flex flex-col justify-center py-2">
+      <img
+        src={imgsrc}
+        width={128}
+        height={128}
+        className="mx-auto rounded-full"
+      />
+      <p className="text-xl font-bold my-1">{name}</p>
+      <p>{email}</p>
     </div>
   );
 };
