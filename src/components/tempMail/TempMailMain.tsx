@@ -29,9 +29,9 @@ const TempMailMain: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    localStorage.setItem('tempEmails', JSON.stringify(emails));
-  }, [emails]);
+  // useEffect(() => {
+  //   localStorage.setItem('tempEmails', JSON.stringify(emails));
+  // }, [emails]);
 
   // const handleCreateEmail = async () => {
   //   setLoading(true);
