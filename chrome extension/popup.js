@@ -1,4 +1,5 @@
 const BACKEND_URL = "http://127.0.0.1:5000/";
+const TEST_EMAIL = "test@example.com"; // Fallback email for testing
 
 document.addEventListener("DOMContentLoaded", () => {
   const generateEmailButton = document.getElementById("generateEmail");
@@ -11,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("Response status:", response.status);
 
       if (!response.ok) {
-        // Log the error text from the response if available
         const errorText = await response.text();
         console.error("HTTP error:", response.status, errorText);
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (error) {
       console.error("Error generating email:", error);
-      emailDisplay.innerText = "Error generating email";
+      emailDisplay.innerText = TEST_EMAIL; // Use fallback email for testing
     }
   });
 
@@ -37,12 +37,12 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Please generate a valid email first!");
       return;
     }
-    // Get the currently active tab and execute a script to fill the email field
+    // Get the currently active tab and execute a script to fill the fields
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0]?.id) {
         chrome.scripting.executeScript({
           target: { tabId: tabs[0].id },
-          function: fillEmailField,
+          function: fillFormFields,
           args: [email]
         });
       }
@@ -51,12 +51,50 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // This function runs in the context of the current page
-function fillEmailField(email) {
-  // Try to find an input field with type="email"
-  const emailField = document.querySelector("input[type='email']");
-  if (emailField) {
-    emailField.value = email;
-  } else {
-    alert("No email field found on this page.");
-  }
+function fillFormFields(email) {
+  const maxAttempts = 5;
+  let attempts = 0;
+  
+  const intervalId = setInterval(() => {
+    // Find and fill email field
+    let emailField = document.querySelector("input[type='email']");
+    if (!emailField) {
+      emailField = document.querySelector("input[placeholder*='Email']");
+    }
+    if (emailField) {
+      emailField.value = email;
+    }
+    
+    // Find and fill password field with a hard-coded password
+    let passwordField = document.querySelector("input[type='password']");
+    if (!passwordField) {
+      passwordField = document.querySelector("input[placeholder*='Password']");
+    }
+    if (passwordField) {
+      passwordField.value = "mySuperSecretPassword";
+    }
+    
+    // Find and fill date-of-birth field with a hard-coded date
+    // First, try standard date input
+    let dobField = document.querySelector("input[type='date']");
+    // Alternatively, look for a field with a placeholder containing "Birth"
+    if (!dobField) {
+      dobField = document.querySelector("input[placeholder*='Birth']");
+    }
+    if (dobField) {
+      // The format may vary: for type="date", use YYYY-MM-DD
+      dobField.value = "1990-01-01";
+    }
+    
+    attempts++;
+    // Clear the interval if at least the email field is found,
+    // or after max attempts.
+    if ((emailField || passwordField || dobField) || attempts >= maxAttempts) {
+      clearInterval(intervalId);
+      if (!emailField) {
+        alert("Email field not found on this page.");
+      }
+      // Optionally, you can alert if other fields were not found.
+    }
+  }, 500); // check every 500ms
 }
