@@ -1,37 +1,56 @@
-import React, { useState } from 'react';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { getOpenAIResponse } from "../../../api";
 import { BlueButton } from "../Buttons";
 import Sidebar from "../sidebar/Sidebar";
-import InboxItem from "./inboxItem";
 import EmailDetails from "./EmailDetails";
-import { getOpenAIResponse } from '../../../api';
+import InboxItem from "./inboxItem";
+
+export interface EmailContent {
+  subject: string;
+  from: string;
+  content: string;
+  date: string;
+}
 
 const Inbox: React.FC = () => {
-  const [query, setQuery] = useState('');
-  const [response, setResponse] = useState('');
-  const [selectedEmail, setSelectedEmail] = useState<null | { subject: string; sender: string; body: string }>(null);
+  const [query, setQuery] = useState("");
+  const [response, setResponse] = useState("");
+  const [selectedEmail, setSelectedEmail] = useState<null | EmailContent>(null);
+  const [emails, setEmails] = useState<EmailContent[]>([]);
+
+  useEffect(() => {
+    getAllEmails();
+  }, []);
+
+  const getAllEmails = async (): Promise<void> => {
+    const res = await axios.get("/gmail_api/emails");
+    if (res.status !== 200) return;
+    setEmails(res.data);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
 
   const handleAIRequest = async () => {
-    console.log('Submitting query:', query); // Debug log
+    console.log("Submitting query:", query); // Debug log
     try {
       const aiResponse = await getOpenAIResponse(query);
-      console.log('AI response:', aiResponse); // Debug log
+      console.log("AI response:", aiResponse); // Debug log
       setResponse(aiResponse.choices[0].message.content);
     } catch (error) {
-      console.error('Error fetching AI response:', error);
+      console.error("Error fetching AI response:", error);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleAIRequest();
     }
   };
 
-  const handleEmailClick = (email: { subject: string; sender: string; body: string }) => {
+  const handleEmailClick = (email: EmailContent) => {
     setSelectedEmail(email);
   };
 
@@ -65,54 +84,14 @@ const Inbox: React.FC = () => {
                 </div>
               )}
               <div className="w-full my-1">
-                <InboxItem
-                  onClick={() => handleEmailClick({ subject: 'Email 1', sender: 'sender1@example.com', body: 'This is the body of email 1.' })}
-                  sender="sender1@example.com"
-                  title="Email 1"
-                  date="2025-02-28"
-                />
-                <InboxItem
-                  onClick={() => handleEmailClick({ subject: 'Email 2', sender: 'sender2@example.com', body: 'This is the body of email 2.' })}
-                  sender="sender2@example.com"
-                  title="Email 2"
-                  date="2025-02-28"
-                />
-                <InboxItem
-                  onClick={() => handleEmailClick({ subject: 'Email 3', sender: 'sender3@example.com', body: 'This is the body of email 3.' })}
-                  sender="sender3@example.com"
-                  title="Email 3"
-                  date="2025-02-28"
-                />
-                <InboxItem
-                  onClick={() => handleEmailClick({ subject: 'Email 4', sender: 'sender4@example.com', body: 'This is the body of email 4.' })}
-                  sender="sender4@example.com"
-                  title="Email 4"
-                  date="2025-02-28"
-                />
-                <InboxItem
-                  onClick={() => handleEmailClick({ subject: 'Email 5', sender: 'sender5@example.com', body: 'This is the body of email 5.' })}
-                  sender="sender5@example.com"
-                  title="Email 5"
-                  date="2025-02-28"
-                />
-                <InboxItem
-                  onClick={() => handleEmailClick({ subject: 'Email 6', sender: 'sender6@example.com', body: 'This is the body of email 6.' })}
-                  sender="sender6@example.com"
-                  title="Email 6"
-                  date="2025-02-28"
-                />
-                <InboxItem
-                  onClick={() => handleEmailClick({ subject: 'Email 7', sender: 'sender7@example.com', body: 'This is the body of email 7.' })}
-                  sender="sender7@example.com"
-                  title="Email 7"
-                  date="2025-02-28"
-                />
-                <InboxItem
-                  onClick={() => handleEmailClick({ subject: 'Email 8', sender: 'sender8@example.com', body: 'This is the body of email 8.' })}
-                  sender="sender8@example.com"
-                  title="Email 8"
-                  date="2025-02-28"
-                />
+                {emails.map((email) => (
+                  <InboxItem
+                    sender={email.from}
+                    title={email.subject}
+                    date={new Date(email.date).toDateString()}
+                    onClick={() => handleEmailClick(email)}
+                  />
+                ))}
               </div>
             </div>
           </>
