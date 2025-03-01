@@ -56,43 +56,45 @@ function fillFormFields(email) {
   let attempts = 0;
   
   const intervalId = setInterval(() => {
+    // Utility to set field value and dispatch events
+    const setField = (field, value) => {
+      if (field) {
+        field.value = value;
+        field.dispatchEvent(new Event('input', { bubbles: true }));
+        field.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    };
+
     // Find and fill email field
     let emailField = document.querySelector("input[type='email']");
     if (!emailField) {
       emailField = document.querySelector("input[placeholder*='Email']");
     }
-    if (emailField) {
-      emailField.value = email;
-    }
-    
+    setField(emailField, email);
+
     // Find and fill password field with a hard-coded password
     let passwordField = document.querySelector("input[type='password']");
     if (!passwordField) {
       passwordField = document.querySelector("input[placeholder*='Password']");
     }
-    if (passwordField) {
-      passwordField.value = "'2j!)e75Z1R,";
-    }
-    
-    // Find and fill date-of-birth fields
+    setField(passwordField, "'2j!)e75Z1R,");
+
+    // Find and fill date-of-birth fields (split fields)
     let dobDayField = document.querySelector("input[name='dateOfBirth-D']");
     let dobMonthField = document.querySelector("input[name='dateOfBirth-M']");
     let dobYearField = document.querySelector("input[name='dateOfBirth-Y']");
     
     if (dobDayField && dobMonthField && dobYearField) {
-      dobDayField.value = "01";
-      dobMonthField.value = "01";
-      dobYearField.value = "1990";
+      setField(dobDayField, "01");
+      setField(dobMonthField, "01");
+      setField(dobYearField, "1990");
     } else {
       // Alternatively, look for a single date field
       let dobField = document.querySelector("input[type='date']");
       if (!dobField) {
         dobField = document.querySelector("input[placeholder*='Birth']");
       }
-      if (dobField) {
-        // The format may vary: for type="date", use YYYY-MM-DD
-        dobField.value = "1990-01-01";
-      }
+      setField(dobField, "1990-01-01");
     }
 
     // Find and fill first name field
@@ -100,28 +102,32 @@ function fillFormFields(email) {
     if (!firstNameField) {
       firstNameField = document.querySelector("input[placeholder*='First name']");
     }
-    if (firstNameField) {
-      firstNameField.value = "Josh";
-    }
+    setField(firstNameField, "Josh");
 
     // Find and fill last name field
     let lastNameField = document.querySelector("input[name='last-name']");
     if (!lastNameField) {
       lastNameField = document.querySelector("input[placeholder*='Last name']");
     }
-    if (lastNameField) {
-      lastNameField.value = "Ian";
-    }
+    setField(lastNameField, "Ian");
     
     attempts++;
-    // Clear the interval if at least the email field is found,
-    // or after max attempts.
-    if ((emailField || passwordField || dobDayField || dobMonthField || dobYearField || firstNameField || lastNameField) || attempts >= maxAttempts) {
+    // If at least one field is filled or we've attempted max times, clear the interval.
+    if (
+      emailField || 
+      passwordField || 
+      dobDayField || 
+      dobMonthField || 
+      dobYearField || 
+      firstNameField || 
+      lastNameField || 
+      attempts >= maxAttempts
+    ) {
       clearInterval(intervalId);
       if (!emailField) {
         alert("Email field not found on this page.");
       }
-      // Optionally, you can alert if other fields were not found.
+      // Optionally, you can add alerts for other fields if needed.
     }
   }, 500); // check every 500ms
 }
