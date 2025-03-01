@@ -1,4 +1,5 @@
 import { BlueButton } from "../Buttons";
+import SidebarAccounts from "./accounts/Accounts";
 import SidebarCategory from "./category/Category";
 import SidebarGeneral from "./general/General";
 
@@ -12,6 +13,7 @@ const Sidebar: React.FC = () => {
       <BlueButton>New Mail</BlueButton>
       <SidebarGeneral />
       <SidebarCategory />
+      <SidebarAccounts />
     </div>
   );
 };
