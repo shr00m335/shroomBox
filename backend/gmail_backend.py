@@ -67,13 +67,12 @@ def callback():
 
     return redirect("http://localhost:5173/manager")
 
-@app.route("/emails")
-def get_emails():
+def get_emails(index):
     """Fetch and display recent emails with content."""
     if "credentials" not in session:
         return redirect(url_for("login"))
 
-    creds = Credentials(**user_emails[0])
+    creds = Credentials(**user_emails[index])
     service = build("gmail", "v1", credentials=creds)
 
     results = service.users().messages().list(userId="me", maxResults=5).execute()
@@ -101,7 +100,14 @@ def get_emails():
 
         emails.append({"from": sender, "subject": subject, "content": body, "date": date})
 
-    return jsonify(emails)
+    return emails
+
+@app.route("/emails")
+def get_all_emails():
+    nested_list = [get_emails(i) for i in range(len(user_emails))]
+    flattened = [item for sublist in nested_list for item in sublist]
+
+    return jsonify(flattened)
 
 def get_profile(index):
     """Fetch user profile (name, email, and profile picture) using Google People API."""
