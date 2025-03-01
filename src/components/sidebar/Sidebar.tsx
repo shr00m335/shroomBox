@@ -2,8 +2,20 @@ import { BlueButton } from "../Buttons";
 import SidebarAccounts from "./accounts/Accounts";
 import SidebarCategory from "./category/Category";
 import SidebarGeneral from "./general/General";
+import React, { useState } from 'react';
+import NewMail from '../newMail/NewMail';
 
 const Sidebar: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleNewMailClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="bg-[#FFFFFF] w-[320px] px-5 h-full overflow-y-auto">
       {/* Title */}
@@ -20,10 +32,11 @@ const Sidebar: React.FC = () => {
         </p>
       </div>
 
-      <BlueButton>New Mail</BlueButton>
+      <BlueButton onClick={handleNewMailClick}>New Mail</BlueButton>
       <SidebarGeneral />
       <SidebarCategory />
       <SidebarAccounts />
+      {isModalOpen && <NewMail onClose={handleCloseModal} />}
     </div>
   );
 };
