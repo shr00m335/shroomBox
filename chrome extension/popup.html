@@ -2,11 +2,55 @@
 <html>
   <head>
     <title>Temp Email Autofill</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f7fa;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+        width: 300px;
+        border-radius: 10px; /* Add this line for rounded edges */
+        overflow: hidden; /* Ensure content doesn't overflow the rounded corners */
+      }
+      h1 {
+        font-size: 18px;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #fff;
+        background-color: #4880FF;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 10px;
+        transition: background-color 0.3s ease;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      #emailDisplay {
+        background-color: #fff;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    </style>
     <script src="popup.js" defer></script>
   </head>
   <body>
+    <h1>Temporary Email Autofill</h1>
     <button id="generateEmail">Generate Temporary Email</button>
-    <div id="emailDisplay" style="margin: 10px 0; font-weight: bold;"></div>
+    <div id="emailDisplay">Your email will appear here</div>
     <button id="fillEmail">Fill Email Field</button>
   </body>
 </html>
