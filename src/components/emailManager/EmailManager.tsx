@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../sidebar/Sidebar";
 import AddEmailPopup from "./AddEmailPopup";
 import EmailManagerAddItem from "./EmailManagerAddItem";
 import EmailManagerItem from "./EmailManagerItem";
+
+interface EmailProfile {
+  email: string;
+  name: string;
+  photo: string;
+}
 
 const EmailManager: React.FC = () => {
   const [isAddingEmail, setIsAddingEmail] = useState<boolean>(false);
@@ -15,7 +22,19 @@ const EmailManager: React.FC = () => {
     "temporary",
   ]);
 
-  // Example data
+  // Data
+  const [emailList, setEmailList] = useState<EmailProfile[]>([]);
+
+  useEffect(() => {
+    getAllEmailProfiles();
+  }, []);
+
+  const getAllEmailProfiles = async (): Promise<void> => {
+    const res = await axios.get("/gmail_api/all_profiles");
+    if (res.status !== 200) return;
+    setEmailList(res.data);
+  };
+
   const personalItems = [
     {
       title: "shr00name1@gmail.com",
@@ -109,12 +128,11 @@ const EmailManager: React.FC = () => {
             </div>
             {/* Cards */}
             <div className="w-full grid grid-cols-3  h-full">
-              {getItemsForActiveTab().map((item, idx) => (
+              {emailList.map((x) => (
                 <EmailManagerItem
-                  key={idx}
-                  title={item.title}
-                  summary={item.summary}
-                  usage={item.usage}
+                  imgsrc={x.photo}
+                  name={x.name}
+                  email={x.email}
                 />
               ))}
               <EmailManagerAddItem onClick={() => setIsAddingEmail(true)} />
