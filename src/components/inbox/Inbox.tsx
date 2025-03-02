@@ -90,27 +90,7 @@ const Inbox: React.FC = () => {
                   <p className="text-gray-700">{response}</p>
                 </div>
               )}
-              <div className="w-full my-1">
-              <InboxItem
-                email={{
-                  subject: "Well Done",
-                  from: "sammy@shroomtechnology.com",
-                  content: "well done sammy, i am proud of you.",
-                  date: "01-03-2025",
-                  avatar: "",
-                  unread: false
-                }}
-                onClick={() =>
-                  handleEmailClick({
-                    subject: "Well Done",
-                    from: "sammy@shroomtechnology.com",
-                    content: "well done sammy, i am proud of you.",
-                    date: "01-03-2025",
-                    avatar: "",
-                    unread: false
-                  })
-                }
-              />
+              <div className="w-full my-1 overflow-y-auto">
                 {emails.map((email) => (
                   <InboxItem
                     email={email}
