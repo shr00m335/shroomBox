@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaArrowLeft, FaSyncAlt } from "react-icons/fa";
-import { getOpenAIResponse } from "../../../api"; // Adjust path as needed
+import { getOpenAIResponse, getTextToSpeech } from "../../../api"; // Adjust path as needed
 import { EmailContent } from "./Inbox";
 
 interface EmailDetailsProps {
@@ -23,21 +23,37 @@ const EmailDetails: React.FC<EmailDetailsProps> = ({ email, onBack }) => {
 
   const generateSummary = async () => {
     if (!email.content) return;
-
+  
     const emailKey = generateEmailKey(email);
     currentEmailKeyRef.current = emailKey;
-
+  
     setLoading(true);
     setError("");
-
+  
     try {
       const prompt = `Summarize this email in 2-3 sentences:\n\nSubject: ${email.subject}\nContent: ${email.content}`;
-      const response = await getOpenAIResponse(prompt);
-
+      const aiResponse = await getOpenAIResponse(prompt);
+  
       // Check if we're still showing the same email
       if (emailKey === currentEmailKeyRef.current) {
-        if (response.choices && response.choices.length > 0) {
-          setSummary(response.choices[0].message.content);
+        if (aiResponse.choices && aiResponse.choices.length > 0) {
+          const summaryText = aiResponse.choices[0].message.content;
+          setSummary(summaryText);
+  
+          // Get the text-to-speech audio binary data
+          const audioData = await getTextToSpeech(summaryText);
+        //   console.log("audioData type:", audioData.constructor.name);
+        //   console.log("audioData byteLength:", audioData.byteLength);
+  
+          // Convert the binary data into a Blob
+        //   const blob = new Blob([audioData], { type: "audio/mpeg" });
+          // Create an object URL for the Blob
+          const audioUrl = URL.createObjectURL(audioData);
+          console.log("Audio URL:", audioUrl);
+  
+          // Create an Audio element and play it
+          const audio = new Audio(audioUrl);
+          audio.play();
         } else {
           setError("No summary generated");
         }

@@ -58,3 +58,40 @@ export async function getOpenAIResponse(
     throw new Error("Failed to fetch AI response");
   }
 }
+
+// ----------------------
+// Text-to-Speech Function
+// ----------------------
+
+/**
+ * Calls the OpenAI text-to-speech endpoint and returns a Buffer containing the audio (MP3).
+ *
+ * @param input - The text to be converted to speech.
+ * @param voice - The voice to be used (default "alloy").
+ * @returns A Promise that resolves to a Buffer with the MP3 audio data.
+ */
+export async function getTextToSpeech(input: string, voice: string = "alloy"): Promise<Blob> {
+  // The endpoint for text-to-speech (adjust if needed)
+  const url = "https://api.openai.com/v1/audio/speech";
+  const data = {
+    model: "tts-1",
+    voice: voice,
+    input: input,
+  };
+
+  try {
+    const response = await axios.post(url, data, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${OPENAI_API_KEY}`,
+      },
+      // Specify responseType to receive binary data
+      responseType: "blob",
+    });
+    // Convert the binary data to a Node Buffer (can be saved or returned)
+    return response.data;
+  } catch (error) {
+    console.error("Error generating speech:", error);
+    throw new Error("Failed to generate speech");
+  }
+}
