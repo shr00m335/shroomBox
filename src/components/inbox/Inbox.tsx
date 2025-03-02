@@ -14,6 +14,7 @@ export interface EmailContent {
   avatar: string;
   unread: boolean;
   plain_content: string;
+  category : string;
 }
 
 const Inbox: React.FC = () => {
@@ -35,6 +36,11 @@ const Inbox: React.FC = () => {
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
       )
     );
+    for (let i = 0; i < emails.length; i++) {
+      const prompt = `Subject: ${emails[i].subject}\nPlease categorize this email into one of the following categories: work, travel, school, hangouts.\nCategory:`;
+      const aiResponse = await getOpenAIResponse(prompt);
+      emails[i].category = aiResponse.choices[0].message.content.trim();
+    }    
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,6 +105,30 @@ const Inbox: React.FC = () => {
                 </div>
               )}
               <div className="w-full my-1 overflow-y-auto">
+                <InboxItem
+                    email={{
+                      subject: "Test Email Subject",
+                      from: "sender@example.com",
+                      content: "This is the detailed content of the test email.",
+                      date: new Date().toISOString(),
+                      avatar: "https://via.placeholder.com/40",
+                      unread: true,
+                      plain_content: "This is the plain text content of the test email.",
+                      category: "work",
+                    }}
+                    onClick={() =>
+                      handleEmailClick({
+                        subject: "Test Email Subject",
+                        from: "sender@example.com",
+                        content: "This is the detailed content of the test email.",
+                        date: new Date().toISOString(),
+                        avatar: "https://via.placeholder.com/40",
+                        unread: true,
+                        plain_content: "This is the plain text content of the test email.",
+                        category: "work",
+                      })
+                    }
+                />
                 {emails.map((email) => (
                   <InboxItem
                     email={email}

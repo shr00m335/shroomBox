@@ -143,6 +143,7 @@ const EmailDetails: React.FC<EmailDetailsProps> = ({ email, onBack }) => {
       <div className="border-b pb-3 mb-3">
         <h2 className="font-bold text-2xl text-left">{email.subject}</h2>
         <p className="text-gray-700 text-left">From: {email.from}</p>
+        <p className="text-gray-700 text-left">Category: {email.category}</p>
       </div>
       <div className="mt-5 ">
         <iframe className="w-full h-[500px]" srcDoc={email.content} />
