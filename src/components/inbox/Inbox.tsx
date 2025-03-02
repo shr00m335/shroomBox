@@ -11,6 +11,7 @@ export interface EmailContent {
   from: string;
   content: string;
   date: string;
+  avatar: string;
 }
 
 const Inbox: React.FC = () => {
@@ -26,7 +27,12 @@ const Inbox: React.FC = () => {
   const getAllEmails = async (): Promise<void> => {
     const res = await axios.get("/gmail_api/emails");
     if (res.status !== 200) return;
-    setEmails(res.data);
+    const data: EmailContent[] = res.data;
+    setEmails(
+      data.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      )
+    );
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,9 +92,7 @@ const Inbox: React.FC = () => {
               <div className="w-full my-1">
                 {emails.map((email) => (
                   <InboxItem
-                    sender={email.from}
-                    title={email.subject}
-                    date={new Date(email.date).toDateString()}
+                    email={email}
                     onClick={() => handleEmailClick(email)}
                   />
                 ))}

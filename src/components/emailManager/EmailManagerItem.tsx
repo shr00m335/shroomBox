@@ -12,7 +12,7 @@ const GameManagerItem: React.FC<GameManagerItemProps> = ({
   email,
 }) => {
   return (
-    <div className="border border-gray-200 rounded-lg p-4 w-64 m-2 shadow-sm h-[240px] flex flex-col justify-center py-2">
+    <div className="border border-gray-200 rounded-lg p-4 w-72 m-2 shadow-sm h-[240px] flex flex-col justify-center py-2">
       <img
         src={imgsrc}
         width={128}

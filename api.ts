@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const OPENAI_API_KEY = "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"; // NEVER hard-code your API key in production!
+const OPENAI_API_KEY =
+  "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"; // NEVER hard-code your API key in production!
 
 // Define a chat message type
 export interface ChatMessage {
@@ -31,14 +32,16 @@ export interface OpenAIResponse {
   choices: ChatChoice[];
 }
 
-export async function getOpenAIResponse(prompt: string): Promise<OpenAIResponse> {
+export async function getOpenAIResponse(
+  prompt: string
+): Promise<OpenAIResponse> {
   const url = "https://api.openai.com/v1/chat/completions";
 
   // Note the updated payload structure:
   const data: ChatCompletionRequest = {
     model: "gpt-3.5-turbo", // or whichever model you want to use
     messages: [{ role: "user", content: prompt }],
-    max_tokens: 100,
+    max_tokens: 500,
     temperature: 0.7, // optional: adjust as needed
   };
 
@@ -46,7 +49,7 @@ export async function getOpenAIResponse(prompt: string): Promise<OpenAIResponse>
     const response = await axios.post<OpenAIResponse>(url, data, {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${OPENAI_API_KEY}`,
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
       },
     });
     return response.data;
