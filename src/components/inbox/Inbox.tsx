@@ -13,6 +13,7 @@ export interface EmailContent {
   date: string;
   avatar: string;
   unread: boolean;
+  plain_content: string;
 }
 
 const Inbox: React.FC = () => {
@@ -43,7 +44,14 @@ const Inbox: React.FC = () => {
   const handleAIRequest = async () => {
     console.log("Submitting query:", query); // Debug log
     try {
-      const aiResponse = await getOpenAIResponse(query);
+      let emailContents: string = "";
+      for (let i = 0; i < emails.length; i++) {
+        emailContents += `Email ${i + 1}.\n`;
+        emailContents += `Subject: ${emails[i].subject}\n`;
+        emailContents += `Body: ${emails[i].plain_content}\n\n`;
+      }
+      const prompt: string = `${emailContents}\nBased on the given emails subjects and contents, answer the following query in 2 to 3 sentences. Each email starts with "Email x", where x is the number of the email. When mentioning the email, use the subject of the email and do not include its number.\nQuery: ${query}`;
+      const aiResponse = await getOpenAIResponse(prompt);
       console.log("AI response:", aiResponse); // Debug log
       setResponse(aiResponse.choices[0].message.content);
     } catch (error) {

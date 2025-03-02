@@ -14,6 +14,8 @@ const EmailDetails: React.FC<EmailDetailsProps> = ({ email, onBack }) => {
   const [error, setError] = useState<string>("");
   const currentEmailKeyRef = useRef<string>("");
 
+  console.log(email.plain_content);
+
   // Create a unique key for the current email
   const generateEmailKey = (email: EmailContent) => {
     return `${email.subject}_${email.from}_${
@@ -23,34 +25,34 @@ const EmailDetails: React.FC<EmailDetailsProps> = ({ email, onBack }) => {
 
   const generateSummary = async () => {
     if (!email.content) return;
-  
+
     const emailKey = generateEmailKey(email);
     currentEmailKeyRef.current = emailKey;
-  
+
     setLoading(true);
     setError("");
-  
+
     try {
-      const prompt = `Summarize this email in 2-3 sentences:\n\nSubject: ${email.subject}\nContent: ${email.content}`;
+      const prompt = `Summarize this email in 2-3 sentences:\n\nSubject: ${email.subject}\nContent: ${email.plain_content}`;
       const aiResponse = await getOpenAIResponse(prompt);
-  
+
       // Check if we're still showing the same email
       if (emailKey === currentEmailKeyRef.current) {
         if (aiResponse.choices && aiResponse.choices.length > 0) {
           const summaryText = aiResponse.choices[0].message.content;
           setSummary(summaryText);
-  
+
           // Get the text-to-speech audio binary data
           const audioData = await getTextToSpeech(summaryText);
-        //   console.log("audioData type:", audioData.constructor.name);
-        //   console.log("audioData byteLength:", audioData.byteLength);
-  
+          //   console.log("audioData type:", audioData.constructor.name);
+          //   console.log("audioData byteLength:", audioData.byteLength);
+
           // Convert the binary data into a Blob
-        //   const blob = new Blob([audioData], { type: "audio/mpeg" });
+          //   const blob = new Blob([audioData], { type: "audio/mpeg" });
           // Create an object URL for the Blob
           const audioUrl = URL.createObjectURL(audioData);
           console.log("Audio URL:", audioUrl);
-  
+
           // Create an Audio element and play it
           const audio = new Audio(audioUrl);
           audio.play();
