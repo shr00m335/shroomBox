@@ -14,7 +14,7 @@ interface EmailProfile {
 
 const EmailManager: React.FC = () => {
   const [isAddingEmail, setIsAddingEmail] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<string>("personal");
+  const [activeTab, setActiveTab] = useState<string>("all");
   const [categories, setCategories] = useState([
     "all",
     "personal",

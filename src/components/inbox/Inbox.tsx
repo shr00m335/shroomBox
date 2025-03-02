@@ -30,10 +30,15 @@ const Inbox: React.FC = () => {
     "others",
   ]);
   const [activeTab, setActiveTab] = useState<string>("all");
+  const [categoryColors, setCategoryColors] = useState<string[]>([]);
 
   useEffect(() => {
     getAllEmails();
   }, []);
+
+  useEffect(() => {
+    setCategoryColors(categories.map((_) => getRandomColor()));
+  }, [categories]);
 
   const getAllEmails = async (): Promise<void> => {
     const res = await axios.get("/gmail_api/emails");
@@ -80,6 +85,14 @@ const Inbox: React.FC = () => {
     }
   };
 
+  const getRandomColor = (): string => {
+    const r = Math.floor(Math.random() * 156) + 100;
+    const g = Math.floor(Math.random() * 156) + 100;
+    const b = Math.floor(Math.random() * 156) + 100;
+
+    return `#${r.toString(16)}${g.toString(16)}${b.toString(16)}`;
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleAIRequest();
@@ -92,6 +105,14 @@ const Inbox: React.FC = () => {
 
   const handleBack = () => {
     setSelectedEmail(null);
+  };
+
+  const handleAddCategory = () => {
+    const newCategory = prompt("Enter new category name:");
+    if (newCategory && !categories.includes(newCategory)) {
+      setCategories([...categories, newCategory]);
+      setActiveTab(newCategory);
+    }
   };
 
   return (
@@ -119,7 +140,7 @@ const Inbox: React.FC = () => {
               ))}
               <button
                 className="px-4 py-2 rounded bg-gray-100 hover:bg-gray-200"
-                onClick={() => {}}
+                onClick={handleAddCategory}
               >
                 + Add Category
               </button>
@@ -147,6 +168,9 @@ const Inbox: React.FC = () => {
                   .map((email) => (
                     <InboxItem
                       email={email}
+                      categoryColor={
+                        categoryColors[categories.indexOf(email.category)]
+                      }
                       onClick={() => handleEmailClick(email)}
                     />
                   ))}
