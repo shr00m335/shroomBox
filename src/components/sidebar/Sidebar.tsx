@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { BlueButton } from "../Buttons";
 import NewMail from "../newMail/NewMail";
-import SidebarAccounts from "./accounts/Accounts";
 import SidebarCategory from "./category/Category";
 import SidebarGeneral from "./general/General";
 
@@ -39,7 +38,6 @@ const Sidebar = ({ selectedItem }: SidebarProps): React.ReactNode => {
       <BlueButton onClick={handleNewMailClick}>New Mail</BlueButton>
       <SidebarGeneral selectedItem={selectedItem} />
       <SidebarCategory />
-      <SidebarAccounts />
       {isModalOpen && <NewMail onClose={handleCloseModal} />}
     </div>
   );

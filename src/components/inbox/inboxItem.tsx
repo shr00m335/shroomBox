@@ -18,7 +18,7 @@ const InboxItem: React.FC<InboxItemProps> = ({ onClick, email }) => {
         height={32}
         className="rounded-full m-auto"
       />
-      <p className="my-auto font-bold">
+      <p className={`my-auto ${email.unread ? "font-bold" : "font-light"}`}>
         {email.from.replace(/<[^>]+>/g, "").trim()}
       </p>
       <p className="my-auto self-start text-sm text-gray-500">

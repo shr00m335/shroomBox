@@ -21,7 +21,6 @@ const SidebarGeneralItem = ({
       <>
         {icon}
         <p className="text-lg ml-2 font-light">{label}</p>
-        <p className="ml-auto mr-0 text-sm text-gray-400">1234</p>
       </>
     </button>
   );

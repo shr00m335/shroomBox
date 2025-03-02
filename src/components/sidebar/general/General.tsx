@@ -1,6 +1,6 @@
 import { AiTwotoneMail } from "react-icons/ai";
 import { FaMailBulk } from "react-icons/fa";
-import { MdLowPriority, MdMail, MdMoreHoriz } from "react-icons/md";
+import { MdMail, MdMoreHoriz } from "react-icons/md";
 import SidebarGeneralItem from "./GeneralItem";
 
 interface SidebarGeneralProps {
@@ -25,12 +25,6 @@ const SidebarGeneral = ({
           icon={<FaMailBulk size={24} />}
           label="Email Manager"
           onClick={() => (window.location.href = "/manager")}
-        />
-        <SidebarGeneralItem
-          selected={false}
-          icon={<MdLowPriority size={24} />}
-          label="Smart Prioritizing"
-          onClick={() => {}}
         />
         <SidebarGeneralItem
           selected={selectedItem === "tempMail"}

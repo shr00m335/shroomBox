@@ -12,6 +12,7 @@ export interface EmailContent {
   content: string;
   date: string;
   avatar: string;
+  unread: boolean;
 }
 
 const Inbox: React.FC = () => {
