@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import Sidebar from "../sidebar/Sidebar";
 
 const TempMailDetailsPage: React.FC = () => {
@@ -20,7 +20,7 @@ const TempMailDetailsPage: React.FC = () => {
     setError("");
     try {
       const res = await fetch(
-        `http://localhost:5000/get-emails?email=${encodeURIComponent(addr)}`
+        `/gmail_api/get-emails?email=${encodeURIComponent(addr)}`
       );
       if (!res.ok) {
         throw new Error("Failed to fetch messages");
@@ -60,8 +60,8 @@ const TempMailDetailsPage: React.FC = () => {
         </button>
 
         {/* Back to the main list */}
-        <Link 
-          to="/tempMail" 
+        <Link
+          to="/tempMail"
           className="inline-block bg-blue-500 text-white px-4 py-2 rounded"
         >
           Back to Email List
@@ -77,11 +77,23 @@ const TempMailDetailsPage: React.FC = () => {
         {/* Display messages */}
         <div className="mt-5 space-y-4">
           {messages.map((msg, idx) => (
-            <div key={idx} className="border border-gray-200 p-4 rounded bg-white shadow-sm">
-              <p><strong>From:</strong> {msg.mail_from}</p>
-              <p><strong>Subject:</strong> {msg.mail_subject}</p>
-              <p><strong>Date:</strong> {msg.mail_timestamp}</p>
-              <p className="mt-2"><strong>Message:</strong> {msg.mail_text}</p>
+            <div
+              key={idx}
+              className="border border-gray-200 p-4 rounded bg-white shadow-sm"
+            >
+              <p>
+                <strong>From:</strong> {msg.mail_from}
+              </p>
+              <p>
+                <strong>Subject:</strong> {msg.mail_subject}
+              </p>
+              <p>
+                <strong>Date:</strong>{" "}
+                {new Date(msg.mail_timestamp * 1000).toLocaleDateString()}
+              </p>
+              <p className="mt-2">
+                <strong>Message:</strong> {msg.mail_text}
+              </p>
             </div>
           ))}
         </div>
