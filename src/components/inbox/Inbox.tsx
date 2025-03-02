@@ -1,7 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { getOpenAIResponse } from "../../../api";
-import { BlueButton } from "../Buttons";
 import Sidebar from "../sidebar/Sidebar";
 import EmailDetails from "./EmailDetails";
 import InboxItem from "./inboxItem";
@@ -14,7 +13,7 @@ export interface EmailContent {
   avatar: string;
   unread: boolean;
   plain_content: string;
-  category : string;
+  category: string;
 }
 
 const Inbox: React.FC = () => {
@@ -22,6 +21,15 @@ const Inbox: React.FC = () => {
   const [response, setResponse] = useState("");
   const [selectedEmail, setSelectedEmail] = useState<null | EmailContent>(null);
   const [emails, setEmails] = useState<EmailContent[]>([]);
+  const [categories, setCategories] = useState<string[]>([
+    "all",
+    "work",
+    "travel",
+    "school",
+    "hangouts",
+    "others",
+  ]);
+  const [activeTab, setActiveTab] = useState<string>("all");
 
   useEffect(() => {
     getAllEmails();
@@ -30,17 +38,24 @@ const Inbox: React.FC = () => {
   const getAllEmails = async (): Promise<void> => {
     const res = await axios.get("/gmail_api/emails");
     if (res.status !== 200) return;
-    const data: EmailContent[] = res.data;
-    setEmails(
-      data.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      )
+    const data: EmailContent[] = (res.data as EmailContent[]).sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-    for (let i = 0; i < emails.length; i++) {
-      const prompt = `Subject: ${emails[i].subject}\nPlease categorize this email into one of the following categories: work, travel, school, hangouts.\nCategory:`;
-      const aiResponse = await getOpenAIResponse(prompt);
-      emails[i].category = aiResponse.choices[0].message.content.trim();
-    }    
+    const subjects: string[] = data.map((x) => x.subject);
+    const prompt = `${subjects.join(
+      ",,"
+    )}\nPlease categorize the given email subjects, seperated by two commas, into one of the following categories. And return the results in a json format of {subject:category}.\nCategory: ${categories
+      .slice(1)
+      .join(",")}`;
+    const aiResponse = await getOpenAIResponse(prompt);
+    const results = Object.values(
+      JSON.parse(aiResponse.choices[0].message.content.trim())
+    ) as string[];
+    for (let i = 0; i < results.length; i++) {
+      data[i].category = results[i];
+    }
+    console.log(data);
+    setEmails(data);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,6 +103,27 @@ const Inbox: React.FC = () => {
         ) : (
           <>
             <p className="font-bold text-3xl w-full text-left">Inbox</p>
+            <div className="w-full flex space-x-2 mb-4">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  className={`px-4 py-2 rounded ${
+                    activeTab === category
+                      ? "bg-gray-300"
+                      : "bg-gray-100 hover:bg-gray-200"
+                  }`}
+                  onClick={() => setActiveTab(category)}
+                >
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </button>
+              ))}
+              <button
+                className="px-4 py-2 rounded bg-gray-100 hover:bg-gray-200"
+                onClick={() => {}}
+              >
+                + Add Category
+              </button>
+            </div>
             <div className="w-full h-9/10 bg-white my-5 rounded-2xl flex flex-col items-start p-5">
               <div className="w-full grid grid-cols-4">
                 <input
@@ -97,7 +133,6 @@ const Inbox: React.FC = () => {
                   onChange={handleInputChange}
                   onKeyPress={handleKeyPress}
                 />
-                <BlueButton onClick={handleAIRequest}>Categorize</BlueButton>
               </div>
               {response && (
                 <div className="w-full col-span-4 mt-2 p-4 bg-gray-100 rounded-lg">
@@ -105,36 +140,16 @@ const Inbox: React.FC = () => {
                 </div>
               )}
               <div className="w-full my-1 overflow-y-auto">
-                <InboxItem
-                    email={{
-                      subject: "Test Email Subject",
-                      from: "sender@example.com",
-                      content: "This is the detailed content of the test email.",
-                      date: new Date().toISOString(),
-                      avatar: "https://via.placeholder.com/40",
-                      unread: true,
-                      plain_content: "This is the plain text content of the test email.",
-                      category: "work",
-                    }}
-                    onClick={() =>
-                      handleEmailClick({
-                        subject: "Test Email Subject",
-                        from: "sender@example.com",
-                        content: "This is the detailed content of the test email.",
-                        date: new Date().toISOString(),
-                        avatar: "https://via.placeholder.com/40",
-                        unread: true,
-                        plain_content: "This is the plain text content of the test email.",
-                        category: "work",
-                      })
-                    }
-                />
-                {emails.map((email) => (
-                  <InboxItem
-                    email={email}
-                    onClick={() => handleEmailClick(email)}
-                  />
-                ))}
+                {emails
+                  .filter(
+                    (x) => activeTab === "all" || x.category === activeTab
+                  )
+                  .map((email) => (
+                    <InboxItem
+                      email={email}
+                      onClick={() => handleEmailClick(email)}
+                    />
+                  ))}
               </div>
             </div>
           </>
