@@ -75,7 +75,18 @@ def get_emails(index):
     creds = Credentials(**user_emails[index])
     service = build("gmail", "v1", credentials=creds)
 
-    results = service.users().messages().list(userId="me", maxResults=5).execute()
+    # Initialize People API
+    people_service = build("people", "v1", credentials=creds)
+
+    # Fetch user profile (name, email, photo)
+    profile = people_service.people().get(
+        resourceName="people/me",
+        personFields="photos"
+    ).execute()
+
+    photo = profile.get("photos", [{}])[0].get("url", "No Photo")
+
+    results = service.users().messages().list(userId="me", maxResults=20).execute()
     messages = results.get("messages", [])
 
     emails = []
@@ -87,18 +98,19 @@ def get_emails(index):
         subject = next((h["value"] for h in headers if h["name"] == "Subject"), "No Subject")
         sender = next((h["value"] for h in headers if h["name"] == "From"), "Unknown Sender")
         date = next((h["value"] for h in headers if h["name"] == "Date"))
+        is_unread = "UNREAD" in msg_data.get("labelIds", [])
 
         # Extract Email Body
         body = "No Content"
         if "parts" in payload:  # For multipart emails
             for part in payload["parts"]:
-                if part["mimeType"] == "text/plain":  # Extract plain text content
+                if part["mimeType"] == "text/html":  # Extract plain text content
                     body = base64.urlsafe_b64decode(part["body"]["data"]).decode("utf-8")
                     break
         elif "body" in payload:  # For simple emails
             body = base64.urlsafe_b64decode(payload["body"]["data"]).decode("utf-8")
 
-        emails.append({"from": sender, "subject": subject, "content": body, "date": date})
+        emails.append({"from": sender, "subject": subject, "content": body, "date": date, "unread": is_unread, "avatar": photo})
 
     return emails
 
