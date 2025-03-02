@@ -1,6 +1,16 @@
 const BACKEND_URL = "http://127.0.0.1:5000/";
 const TEST_EMAIL = "test@example.com"; // Fallback email for testing
 
+function getRandomString(length) {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const generateEmailButton = document.getElementById("generateEmail");
   const emailDisplay = document.getElementById("emailDisplay");
@@ -8,23 +18,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   generateEmailButton.addEventListener("click", async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/create-email`);
-      console.log("Response status:", response.status);
+      // const response = await fetch(`${BACKEND_URL}/create-email`);
+      // console.log("Response status:", response.status);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("HTTP error:", response.status, errorText);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // if (!response.ok) {
+      //   const errorText = await response.text();
+      //   console.error("HTTP error:", response.status, errorText);
+      //   throw new Error(`HTTP error! status: ${response.status}`);
+      // }
 
-      const data = await response.json();
-      console.log("Response data:", data);
+      // const data = await response.json();
+      // console.log("Response data:", data);
 
-      if (data && data.email) {
-        emailDisplay.innerText = data.email;
-      } else {
-        throw new Error("No email returned from backend.");
-      }
+      // if (data && data.email) {
+      //   emailDisplay.innerText = data.email;
+      // } else {
+      //   throw new Error("No email returned from backend.");
+      // }
+      emailDisplay.innerText = `${getRandomString(10)}@${getRandomString(
+        6
+      )}.com`;
     } catch (error) {
       console.error("Error generating email:", error);
       emailDisplay.innerText = TEST_EMAIL; // Use fallback email for testing
@@ -43,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         chrome.scripting.executeScript({
           target: { tabId: tabs[0].id },
           function: fillFormFields,
-          args: [email]
+          args: [email],
         });
       }
     });
@@ -54,14 +67,14 @@ document.addEventListener("DOMContentLoaded", () => {
 function fillFormFields(email) {
   const maxAttempts = 5;
   let attempts = 0;
-  
+
   const intervalId = setInterval(() => {
     // Utility to set field value and dispatch events
     const setField = (field, value) => {
       if (field) {
         field.value = value;
-        field.dispatchEvent(new Event('input', { bubbles: true }));
-        field.dispatchEvent(new Event('change', { bubbles: true }));
+        field.dispatchEvent(new Event("input", { bubbles: true }));
+        field.dispatchEvent(new Event("change", { bubbles: true }));
       }
     };
 
@@ -83,7 +96,7 @@ function fillFormFields(email) {
     let dobDayField = document.querySelector("input[name='dateOfBirth-D']");
     let dobMonthField = document.querySelector("input[name='dateOfBirth-M']");
     let dobYearField = document.querySelector("input[name='dateOfBirth-Y']");
-    
+
     if (dobDayField && dobMonthField && dobYearField) {
       setField(dobDayField, "01");
       setField(dobMonthField, "01");
@@ -100,7 +113,9 @@ function fillFormFields(email) {
     // Find and fill first name field
     let firstNameField = document.querySelector("input[name='first-name']");
     if (!firstNameField) {
-      firstNameField = document.querySelector("input[placeholder*='First name']");
+      firstNameField = document.querySelector(
+        "input[placeholder*='First name']"
+      );
     }
     setField(firstNameField, "Josh");
 
@@ -110,17 +125,17 @@ function fillFormFields(email) {
       lastNameField = document.querySelector("input[placeholder*='Last name']");
     }
     setField(lastNameField, "Ian");
-    
+
     attempts++;
     // If at least one field is filled or we've attempted max times, clear the interval.
     if (
-      emailField || 
-      passwordField || 
-      dobDayField || 
-      dobMonthField || 
-      dobYearField || 
-      firstNameField || 
-      lastNameField || 
+      emailField ||
+      passwordField ||
+      dobDayField ||
+      dobMonthField ||
+      dobYearField ||
+      firstNameField ||
+      lastNameField ||
       attempts >= maxAttempts
     ) {
       clearInterval(intervalId);
