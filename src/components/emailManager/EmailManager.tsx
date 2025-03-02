@@ -9,14 +9,14 @@ interface EmailProfile {
   email: string;
   name: string;
   photo: string;
+  category: string;
 }
 
 const EmailManager: React.FC = () => {
   const [isAddingEmail, setIsAddingEmail] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<
-    "personal" | "work" | "temporary" | string
-  >("personal");
+  const [activeTab, setActiveTab] = useState<string>("personal");
   const [categories, setCategories] = useState([
+    "all",
     "personal",
     "work",
     "temporary",
@@ -74,13 +74,15 @@ const EmailManager: React.FC = () => {
             </div>
             {/* Cards */}
             <div className="w-full grid grid-cols-3  h-full">
-              {emailList.map((x) => (
-                <EmailManagerItem
-                  imgsrc={x.photo}
-                  name={x.name}
-                  email={x.email}
-                />
-              ))}
+              {emailList
+                .filter((x) => activeTab === "all" || x.category === activeTab)
+                .map((x) => (
+                  <EmailManagerItem
+                    imgsrc={x.photo}
+                    name={x.name}
+                    email={x.email}
+                  />
+                ))}
               <EmailManagerAddItem onClick={() => setIsAddingEmail(true)} />
             </div>
           </div>
@@ -88,7 +90,7 @@ const EmailManager: React.FC = () => {
       </div>
       {isAddingEmail && (
         <AddEmailPopup
-          categories={categories}
+          categories={categories.slice(1)}
           onClose={() => setIsAddingEmail(false)}
         />
       )}
