@@ -1,26 +1,28 @@
 # ShroomBox
 
+**(This project is just a prototype, it just a proof-of-concept. Do not use it in any production deployment)**
+
 ## Introduction
 
-ShroomBox, the only email system you need.
-Our current inbox already spores too many emails!
+**_ShroomBox_** combines all your email accounts into one convenient platform, streamlining your inbox management.
 
-Email hasn’t evolved in over 20 years, we are bombarded by **spam**, **scams**. Managing accounts across platforms remains frustrating.
+Whether **personal** or **professional**, you can access **all your emails** in one place, reducing clutter and increasing efficiency.
 
-99% of services require email to sign up, even for one-time use, leaving inboxes cluttered.
-Gmail, Outlook—put them aside, because ShroomBox is the “real fungi”.
+ShroomBox is designed to simplify and secure your email experience, with AI tools that save time and keep your communications organized.
 
-At ShroomBox, we combine all your inbox into one unified space and manage temporary emails on demand.
+## Key Features:
 
-ShroomBox uses AI to summarize emails, offer text-to-speech, enable search with AskAI, and smartly categorize messages.
+1. **Unified Inbox**: Combine multiple email accounts into one view for easier management.
 
-A Chrome extension is also available for an immersive experience, auto-filling temporary email and sign-up details.
+2. **Temporary Email for convenience**: Generate one-time-use email addresses for fast and worry-free sign-ups.
 
-We have used React and Tailwind for the frontend, flask backend, OpenAI API, TempMail API, and Oauth2 api for our tech stack.
+3. **Chrome extension**: auto-fill in temporary emails on sign up websites.
 
-With ShroomBox, you can grow “much room” for all your emails.
+4. **AI Summarization**: Get quick email summaries to save time.
 
-**(This project is just a prototype, not designed for production deployment)**
+5. **Text-to-Speech**: Listen to emails with the accessibility feature for on-the-go use.
+
+6. **Smart AI Categorization**: Automatically sorts your emails into categories, helping you prioritize what matters.
 
 ## How to run
 
