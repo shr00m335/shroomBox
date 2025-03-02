@@ -2,6 +2,26 @@
 
 ## Introduction
 
+ShroomBox, the only email system you need.
+Our current inbox already spores too many emails!
+
+Email hasn’t evolved in over 20 years, we are bombarded by **spam**, **scams**. Managing accounts across platforms remains frustrating.
+
+99% of services require email to sign up, even for one-time use, leaving inboxes cluttered.
+Gmail, Outlook—put them aside, because ShroomBox is the “real fungi”.
+
+At ShroomBox, we combine all your inbox into one unified space and manage temporary emails on demand.
+
+ShroomBox uses AI to summarize emails, offer text-to-speech, enable search with AskAI, and smartly categorize messages.
+
+A Chrome extension is also available for an immersive experience, auto-filling temporary email and sign-up details.
+
+We have used React and Tailwind for the frontend, flask backend, OpenAI API, TempMail API, and Oauth2 api for our tech stack.
+
+With ShroomBox, you can grow “much room” for all your emails.
+
+**(This project is just a prototype, not designed for production deployment)**
+
 ## How to run
 
 1. Clone this repository
