@@ -1,6 +1,6 @@
 # ShroomBox
 
-**(This project is just a prototype, it just a proof-of-concept. Do not use it in any production deployment)**
+**(This project is just a prototype and proof-of-concept. Do not use it in any production deployment)**
 
 ## Introduction
 
