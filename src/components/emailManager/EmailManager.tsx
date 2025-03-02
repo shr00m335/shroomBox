@@ -35,60 +35,6 @@ const EmailManager: React.FC = () => {
     setEmailList(res.data);
   };
 
-  const personalItems = [
-    {
-      title: "shr00name1@gmail.com",
-      summary: "AI Summary: News, Netflix, Instagram, etc.",
-      usage:
-        "Used for daily life. Contains subscription usage for YouTube Premium, ChatGPT Plus...",
-    },
-    {
-      title: "shr00names@gmail.com",
-      summary: "Steam, Riot Games, Minecraft...",
-      usage: "Used for gaming services.",
-    },
-    {
-      title: "shr00nmail218@gmail.com",
-      summary: "AI Summary: 123Bank, Trading.com...",
-      usage: "Used for important finance emails.",
-    },
-    {
-      title: "shr00nmail218@gmail.com",
-      summary: "AI Summary: 123Bank, Trading.com...",
-      usage: "Used for important finance emails.",
-    },
-  ];
-
-  const workItems = [
-    {
-      title: "workmail@company.com",
-      summary: "AI Summary: Team updates, project management, etc.",
-      usage: "Used for official company communications.",
-    },
-  ];
-
-  const temporaryItems = [
-    {
-      title: "temp-user@mail.com",
-      summary: "AI Summary: Disposable, short-term usage.",
-      usage: "Used for signing up on test websites.",
-    },
-    // Add more items here...
-  ];
-
-  const getItemsForActiveTab = () => {
-    switch (activeTab) {
-      case "personal":
-        return personalItems;
-      case "work":
-        return workItems;
-      case "temporary":
-        return temporaryItems;
-      default:
-        return [];
-    }
-  };
-
   const handleAddCategory = () => {
     const newCategory = prompt("Enter new category name:");
     if (newCategory && !categories.includes(newCategory)) {
@@ -141,7 +87,10 @@ const EmailManager: React.FC = () => {
         </div>
       </div>
       {isAddingEmail && (
-        <AddEmailPopup onClose={() => setIsAddingEmail(false)} />
+        <AddEmailPopup
+          categories={categories}
+          onClose={() => setIsAddingEmail(false)}
+        />
       )}
     </>
   );
