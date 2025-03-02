@@ -1,6 +1,7 @@
 import os
 import base64
 import json
+import re
 import google.auth
 from flask import Flask, redirect, url_for, session, request, jsonify
 from google.oauth2.credentials import Credentials
@@ -9,22 +10,26 @@ from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from flask_cors import CORS
+from dotenv import load_dotenv
 import hashlib
 import requests
-from dotenv import load_dotenv
 import random
-
-load_dotenv()
-
-RAPIDAPI_KEY = os.getenv('RAPID_API_KEY')
-
-RAPIDAPI_HOST = "privatix-temp-mail-v1.p.rapidapi.com"
+import string
 
 # Flask Setup
 app = Flask(__name__)
-app.secret_key = "your_secret_key"  # Change this!
-CORS(app)
 
+load_dotenv()
+
+APP_SECRET = os.getenv("APP_SECRET", "secret_key")
+app.secret_key = APP_SECRET  # Change this!
+CORS(app)
+RAPIDAPI_KEY = os.getenv('RAPID_API_KEY')
+
+RAPIDAPI_HOST = "privatix-temp-mail-v1.p.rapidapi.com"
+BASE_URL = f"https://{RAPIDAPI_HOST}"
+
+email_category = "personal"
 user_emails = []
 with open("user_emails.json", "r") as fp:
     user_emails = json.load(fp)
@@ -50,8 +55,13 @@ def home():
     """Home page - Shows login link."""
     return '<a href="/login">Login with Google</a>'
 
-@app.route("/login")
+@app.route("/login/")
 def login():
+    global email_category
+    email_category = request.args.get("category")
+    if (email_category is None):
+        email_category = "personal"
+        return {}, 400
     """Redirect user to Google for authentication."""
     auth_url, _ = flow.authorization_url(prompt="consent")
     return redirect(auth_url)
@@ -70,6 +80,7 @@ def callback():
           "client_id": creds.client_id,
           "client_secret": creds.client_secret,
           "scopes": creds.scopes,
+          "category": email_category
       }
     user_emails.append(credentials)
     with open("user_emails.json", "w") as fp:
@@ -77,12 +88,24 @@ def callback():
 
     return redirect("http://localhost:5173/manager")
 
+def clean_text(text):
+    """Remove links, images, and extra spaces from email text."""
+    text = re.sub(r'http[s]?://\S+', '', text)  # Remove links (URLs)
+    text = re.sub(r'\S+@\S+', '', text)  # Remove email addresses
+    text = re.sub(r'<.*?>', '', text)  # Remove any leftover HTML tags
+    text = re.sub(r'(\n+\r*)|(\n*\r+)', '\n', text).strip()  # Remove extra newlines
+    text = re.sub(r'\n+', '\n', text).strip()  # Remove extra newlines
+    text = re.sub('\[.*?\]', '', text).strip()  # Remove images
+    return text
+
 def get_emails(index):
     """Fetch and display recent emails with content."""
     if "credentials" not in session:
         return redirect(url_for("login"))
 
-    creds = Credentials(**user_emails[index])
+    creds = user_emails[index].copy()
+    del(creds["category"])
+    creds = Credentials(**creds)
     service = build("gmail", "v1", credentials=creds)
 
     # Initialize People API
@@ -112,15 +135,20 @@ def get_emails(index):
 
         # Extract Email Body
         body = "No Content"
+        plain_text = None
         if "parts" in payload:  # For multipart emails
             for part in payload["parts"]:
                 if part["mimeType"] == "text/html":  # Extract plain text content
                     body = base64.urlsafe_b64decode(part["body"]["data"]).decode("utf-8")
                     break
+                elif part["mimeType"] == "text/plain":
+                    plain_text = base64.urlsafe_b64decode(part["body"]["data"]).decode("utf-8")
         elif "body" in payload:  # For simple emails
             body = base64.urlsafe_b64decode(payload["body"]["data"]).decode("utf-8")
+            plain_text = body
 
-        emails.append({"from": sender, "subject": subject, "content": body, "date": date, "unread": is_unread, "avatar": photo})
+
+        emails.append({"from": sender, "subject": subject, "content": body, "plain_content": clean_text(plain_text), "date": date, "unread": is_unread, "avatar": photo})
 
     return emails
 
@@ -136,7 +164,9 @@ def get_profile(index):
     if "credentials" not in session:
         return redirect(url_for("login"))
 
-    creds = Credentials(**user_emails[index])
+    creds = user_emails[index].copy()
+    del(creds["category"])
+    creds = Credentials(**creds)
 
     # Refresh token if expired
     if creds.expired and creds.refresh_token:
@@ -155,8 +185,9 @@ def get_profile(index):
     name = profile.get("names", [{}])[0].get("displayName", "Unknown")
     email = profile.get("emailAddresses", [{}])[0].get("value", "No Email")
     photo = profile.get("photos", [{}])[0].get("url", "No Photo")
+    category = user_emails[index]["category"]
 
-    return {"name": name, "email": email, "photo": photo}
+    return {"name": name, "email": email, "photo": photo, "category": category}
 
 @app.route("/all_profiles")
 def get_all_user_profiles():
@@ -168,8 +199,6 @@ def logout():
     """Clear session and log out."""
     session.clear()
     return redirect(url_for("home"))
-
-BASE_URL = f"https://{RAPIDAPI_HOST}"
 
 @app.route("/create-email", methods=["GET"])
 def create_email():
@@ -206,7 +235,7 @@ def create_email():
     return jsonify({"email": disposable_email})
 
 @app.route("/get-emails", methods=["GET"])
-def get_emails():
+def get_temp_emails():
     """
     Given an email address (via query parameter 'email'),
     1. Compute its MD5 hash.
